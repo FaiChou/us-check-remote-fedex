@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>联邦美国偏远查询</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100vw;
+      margin: 0;
+      background-color: #f5f5f5;
+      font-family: Arial, sans-serif;
+    }
+
+    #input {
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    #input {
+      box-sizing: border-box;
+      width: 200px;
+      height: 50px;
+      border-radius: 25px;
+      text-align: center;
+    }
+
+    #result1,
+    #result2 {
+      font-size: large;
+      margin-top: 20px;
+      width: 300px;
+      text-align: center;
+      white-space: pre-wrap;
+    }
+  </style>
+  <script>
+    window.onload = function () {
+      let inputField = document.getElementById('input');
+      let resultArea1 = document.getElementById('result1');
+      let resultArea2 = document.getElementById('result2');
+      inputField.addEventListener('input', function () {
+        let input = this.value;
+        if (input.length === 5 && /^\d{5}$/.test(input)) {
+          submitQuery(input);
+        } else {
+          resultArea1.textContent = ''
+          resultArea2.textContent = ''
+        }
+      });
+      inputField.addEventListener('keypress', function (e) {
+        if (e.which < 48 || e.which > 57) {
+          e.preventDefault();
+        }
+      });
+      function submitQuery(zipcode) {
+        fetch('https://cnwcweb.fedex.com.cn/wechatExper/odas/rate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ type: 'POD', countryCode: 'US', zipCode: zipcode, city: '' })
+        })
+          .then(response => response.json())
+          .then(data => {
+            const city = data.datas.city
+            const result = data.datas.data
+            resultArea1.textContent = city
+            resultArea2.textContent = result
+            if (result.includes('查询结果异常')) {
+              resultArea2.style.color = 'red'
+            } else if (result.includes('收取超范围派送附加费')) {
+              resultArea2.style.color = 'blue'
+            } else if (result.includes('正常服务范围')) {
+              resultArea2.style.color = 'green'
+            }
+          })
+          .catch((error) => {
+            alert('查询错误')
+            console.error('Error:', error);
+          });
+      }
+    };
+  </script>
+</head>
+
+<body>
+  <input type="text" id="input" maxlength="5" placeholder="请输入5位邮编" />
+  <pre id="result1"></pre>
+  <pre id="result2"></pre>
+</body>
+
+</html>
