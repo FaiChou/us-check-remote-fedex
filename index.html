@@ -32,7 +32,8 @@
     }
 
     #result1,
-    #result2 {
+    #result2,
+    #result3 {
       font-size: large;
       margin-top: 20px;
       width: 300px;
@@ -45,6 +46,7 @@
       let inputField = document.getElementById('input');
       let resultArea1 = document.getElementById('result1');
       let resultArea2 = document.getElementById('result2');
+      let resultArea3 = document.getElementById('result3');
       inputField.addEventListener('input', function () {
         let input = this.value;
         if (input.length === 5 && /^\d{5}$/.test(input)) {
@@ -71,8 +73,8 @@
           .then(data => {
             const city = data.datas.city
             const result = data.datas.data
-            resultArea1.textContent = city
-            resultArea2.textContent = result
+            resultArea1.textContent = `城市: ${city}`;
+            resultArea2.textContent = `FedEx: ${result}`;
             if (result.includes('查询结果异常')) {
               resultArea2.style.color = 'red'
             } else if (result.includes('收取超范围派送附加费')) {
@@ -85,6 +87,18 @@
             alert('查询错误')
             console.error('Error:', error);
           });
+        fetch('./ups.json')
+          .then(r => r.json())
+          .then(data => {
+            const n = zipcode.toString().padStart(5, '0')
+            const r = data[n] || '不偏远'
+            resultArea3.textContent = `UPS: ${r}`
+            if (r === '不偏远') {
+              resultArea3.style.color = 'green'
+            } else {
+              resultArea3.style.color = 'blue'
+            }
+          })
       }
     };
   </script>
@@ -94,6 +108,7 @@
   <input type="text" id="input" maxlength="5" placeholder="请输入5位邮编" />
   <pre id="result1"></pre>
   <pre id="result2"></pre>
+  <pre id="result3"></pre>
 </body>
 
 </html>
