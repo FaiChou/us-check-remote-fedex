@@ -42,6 +42,17 @@
     }
   </style>
   <script>
+    let cachedUPSData = null;
+    function parseUPS(data) {
+      const n = zipcode.toString().padStart(5, '0')
+      const r = data[n] || '不偏远'
+      resultArea3.textContent = `UPS: ${r}`
+      if (r === '不偏远') {
+        resultArea3.style.color = 'green'
+      } else {
+        resultArea3.style.color = 'blue'
+      }
+    }
     window.onload = function () {
       let inputField = document.getElementById('input');
       let resultArea1 = document.getElementById('result1');
@@ -87,18 +98,16 @@
             alert('查询错误')
             console.error('Error:', error);
           });
-        fetch('./ups.json')
-          .then(r => r.json())
-          .then(data => {
-            const n = zipcode.toString().padStart(5, '0')
-            const r = data[n] || '不偏远'
-            resultArea3.textContent = `UPS: ${r}`
-            if (r === '不偏远') {
-              resultArea3.style.color = 'green'
-            } else {
-              resultArea3.style.color = 'blue'
-            }
-          })
+        if (cachedUPSData) {
+          parseUPS(cachedUPSData);
+        } else {
+          fetch('./ups.json')
+            .then(r => r.json())
+            .then(data => {
+              parseUPS(data);
+              cachedUPSData = data;
+            })
+        }
       }
     };
   </script>
