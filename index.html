@@ -62,7 +62,7 @@
           e.preventDefault();
         }
       });
-      function parseUPS(data) {
+      function parseUPS(data, zipcode) {
         const n = zipcode.toString().padStart(5, '0')
         const r = data[n] || '不偏远'
         resultArea3.textContent = `UPS: ${r}`
@@ -99,12 +99,12 @@
             console.error('Error:', error);
           });
         if (cachedUPSData) {
-          parseUPS(cachedUPSData);
+          parseUPS(cachedUPSData, zipcode);
         } else {
           fetch('./ups.json')
             .then(r => r.json())
             .then(data => {
-              parseUPS(data);
+              parseUPS(data, zipcode);
               cachedUPSData = data;
             })
         }
