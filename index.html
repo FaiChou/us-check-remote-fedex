@@ -73,6 +73,9 @@
         }
       }
       function submitQuery(zipcode) {
+        resultArea1.textContent = ''
+        resultArea2.textContent = ''
+        resultArea3.textContent = ''
         fetch('https://cnwcweb.fedex.com.cn/wechatExper/odas/rate', {
           method: 'POST',
           headers: {
