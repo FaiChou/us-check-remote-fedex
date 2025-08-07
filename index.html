@@ -89,6 +89,31 @@
       position: relative;
       z-index: 1;
     }
+
+    /* Loading 动画样式 */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #3B82F6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #6B7280;
+      font-size: 16px;
+    }
   </style>
   <script>
     let cachedUPSData = null;
@@ -124,6 +149,14 @@
         resultArea2.textContent = ''
         resultArea3.textContent = ''
         resultArea4.textContent = ''
+        
+        // 为FedEx查询添加loading状态
+        resultArea1.innerHTML = '<div class="loading-text"><div class="loading"></div>查询中...</div>'
+        resultArea2.innerHTML = '<div class="loading-text"><div class="loading"></div>查询中...</div>'
+        
+        // 为DHL查询添加loading状态
+        resultArea4.innerHTML = '<div class="loading-text"><div class="loading"></div>查询中...</div>'
+        
         const jsonHeaders = {
           'Content-Type': 'application/json'
         }
@@ -147,7 +180,10 @@
             }
           })
           .catch((error) => {
-            alert('Fedex 查询错误')
+            resultArea1.textContent = 'FedEx查询失败'
+            resultArea2.textContent = '查询错误'
+            resultArea1.style.color = 'red'
+            resultArea2.style.color = 'red'
             console.error('Error:', error);
           });
         if (cachedUPSData) {
@@ -174,6 +210,11 @@
             } else {
               resultArea4.style.color = 'green'
             }
+          })
+          .catch((error) => {
+            resultArea4.textContent = 'DHL查询失败'
+            resultArea4.style.color = 'red'
+            console.error('Error:', error);
           })
       }
     };
